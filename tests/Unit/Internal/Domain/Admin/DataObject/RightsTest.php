@@ -12,13 +12,9 @@ namespace OxidEsales\EshopCommunity\Tests\Unit\Internal\Domain\Admin\DataObject;
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 use OxidEsales\EshopCommunity\Internal\Domain\Admin\DataObject\Rights;
-use OxidEsales\EshopCommunity\Internal\Domain\Authentication\Bridge\PasswordServiceBridgeInterface;
-use OxidEsales\EshopCommunity\Tests\Integration\Internal\ContainerTrait;
 
 class RightsTest extends TestCase
 {
-    use ContainerTrait;
-
     public function rightsProvider()
     {
         return [

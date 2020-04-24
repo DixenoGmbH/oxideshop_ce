@@ -18,7 +18,7 @@ class UserNameTest extends TestCase
     public function testFromUserInput()
     {
         $email = 'test@oxideshop.de';
-        $userName = UserName::fromUserInput($email);
+        $userName = UserName::fromString($email);
 
         $this->assertEquals($email, $userName);
     }
@@ -28,6 +28,6 @@ class UserNameTest extends TestCase
         $this->expectException(InvalidArgumentException::class);
 
         $email = 'te@st@oxideshop.de.de';
-        UserName::fromUserInput($email);
+        UserName::fromString($email);
     }
 }

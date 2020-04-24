@@ -9,8 +9,6 @@ declare(strict_types=1);
 
 namespace OxidEsales\EshopCommunity\Internal\Domain\Admin\DataObject;
 
-use OxidEsales\EshopCommunity\Internal\Domain\Email\EmailValidatorService;
-
 class UserName
 {
     /**
@@ -20,19 +18,14 @@ class UserName
 
     private function __construct(string $userName)
     {
-        $this->userName = $userName;
-    }
-
-    public static function fromUserInput(string $userName): self
-    {
-        if (!EmailValidatorService::isEmailValid($userName)) {
+        if (filter_var($userName, FILTER_VALIDATE_EMAIL) === false) {
             throw new \InvalidArgumentException();
         }
 
-        return new self($userName);
+        $this->userName = $userName;
     }
 
-    public static function fromDb(string $userName): self
+    public function fromString(string $userName): self
     {
         return new self($userName);
     }

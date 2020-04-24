@@ -22,9 +22,9 @@ class Admin
     private $userName;
 
     /**
-     * @var Password
+     * @var PasswordHash
      */
-    private $password;
+    private $passwordHash;
 
     /**
      * @var Rights
@@ -39,13 +39,13 @@ class Admin
     private function __construct(
         $id,
         UserName $userName,
-        Password $password,
+        PasswordHash $passwordHash,
         Rights $rights,
         int $shopId
     ) {
         $this->id   = $id;
         $this->userName = $userName;
-        $this->password = $password;
+        $this->passwordHash = $passwordHash;
         $this->rights   = $rights;
         $this->shopId   = $shopId;
     }
@@ -53,7 +53,7 @@ class Admin
     public static function fromUserInput(
         string $userId,
         UserName $userName,
-        Password $password,
+        PasswordHash $passwordHash,
         Rights $rights,
         int $shopId
     ): self {
@@ -69,7 +69,7 @@ class Admin
         return new self(
             $userId,
             $userName,
-            $password,
+            $passwordHash,
             $rights,
             $shopId
         );
@@ -78,14 +78,14 @@ class Admin
     public static function fromDb(
         string $userId,
         UserName $userName,
-        Password $password,
+        PasswordHash $passwordHash,
         Rights $rights,
         int $shopId
     ): self {
         return new self(
             $userId,
             $userName,
-            $password,
+            $passwordHash,
             $rights,
             $shopId
         );
@@ -101,9 +101,9 @@ class Admin
         return $this->userName;
     }
 
-    public function getPassword(): Password
+    public function getPasswordHash(): PasswordHash
     {
-        return $this->password;
+        return $this->passwordHash;
     }
 
     public function getRights(): Rights

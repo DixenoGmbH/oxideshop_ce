@@ -12,10 +12,9 @@ namespace OxidEsales\EshopCommunity\Tests\Unit\Internal\Domain\Admin\DataObject;
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 use OxidEsales\EshopCommunity\Internal\Domain\Admin\DataObject\Admin;
-use OxidEsales\EshopCommunity\Internal\Domain\Admin\DataObject\Password;
+use OxidEsales\EshopCommunity\Internal\Domain\Admin\DataObject\PasswordHash;
 use OxidEsales\EshopCommunity\Internal\Domain\Admin\DataObject\Rights;
 use OxidEsales\EshopCommunity\Internal\Domain\Admin\DataObject\UserName;
-use OxidEsales\EshopCommunity\Internal\Domain\Authentication\Bridge\PasswordServiceBridgeInterface;
 use OxidEsales\EshopCommunity\Tests\Integration\Internal\ContainerTrait;
 
 class AdminTest extends TestCase
@@ -28,43 +27,62 @@ class AdminTest extends TestCase
 
         $admin = Admin::fromUserInput(
             '550e8400e29b11d4a716446655440000',
-            UserName::fromUserInput('test@oxideshop.de'),
-            Password::fromUserInput($testPassword),
+            UserName::fromString('test@oxideshop.de'),
+            PasswordHash::fromPassword($testPassword, PASSWORD_ARGON2I),
             Rights::fromUserInput('malladmin'),
             1
         );
 
         $this->assertEquals('550e8400e29b11d4a716446655440000', $admin->getId());
         $this->assertEquals('test@oxideshop.de', $admin->getUserName());
-        $this->assertNotEquals($testPassword, $admin->getPassword());
+        $this->assertNotEquals($testPassword, $admin->getPasswordHash());
         $this->assertEquals('malladmin', $admin->getRights());
         $this->assertEquals('1', $admin->getShopId());
 
-        $passwordServiceBridge = $this->get(PasswordServiceBridgeInterface::class);
-
-        $this->assertTrue($passwordServiceBridge->verifyPassword($testPassword, (string) $admin->getPassword()));
+        $this->assertTrue(
+            $admin->getPasswordHash()->verify($testPassword)
+        );
     }
 
-    public function testFailsFromUserInput()
+    public function testFailsWithWrongUUID()
     {
         $this->expectException(InvalidArgumentException::class);
 
         Admin::fromUserInput(
             '550e8400e29b11d4a716446655440000asdasdasd',
-            UserName::fromUserInput('test@oxideshop.de'),
-            Password::fromUserInput('somePassword'),
+            UserName::fromString('test@oxideshop.de'),
+            PasswordHash::fromPassword('somePassword', PASSWORD_ARGON2I),
             Rights::fromUserInput('malladmin'),
             1
         );
+    }
 
+    public function testFailsWithWrongShopId()
+    {
         $this->expectException(InvalidArgumentException::class);
 
         Admin::fromUserInput(
             '550e8400e29b11d4a716446655440000',
-            UserName::fromUserInput('test@oxideshop.de'),
-            Password::fromUserInput('somePassword'),
+            UserName::fromString('test@oxideshop.de'),
+            PasswordHash::fromPassword('somePassword', PASSWORD_ARGON2I),
             Rights::fromUserInput('malladmin'),
             0
         );
+    }
+
+    public function checkChangeToAdmin()
+    {
+        $admin = Admin::fromUserInput(
+            '550e8400e29b11d4a716446655440000',
+            UserName::fromString('test@oxideshop.de'),
+            PasswordHash::fromPassword('test1234', PASSWORD_ARGON2I),
+            Rights::fromUserInput('1'),
+            1
+        );
+
+        $newAdmin = $admin->withNewRights(Rights::fromUserInput('malladmin'));
+
+        $this->assertSame('malladmin', (string) $newAdmin->getRights());
+        $this->assertNotSame($admin, $newAdmin);
     }
 }

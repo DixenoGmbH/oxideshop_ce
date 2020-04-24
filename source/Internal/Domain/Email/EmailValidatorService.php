@@ -9,6 +9,9 @@ declare(strict_types=1);
 
 namespace OxidEsales\EshopCommunity\Internal\Domain\Email;
 
+use InvalidArgumentException;
+use OxidEsales\EshopCommunity\Internal\Domain\Admin\DataObject\UserName;
+
 /**
  * Class EmailValidatorService
  * @package OxidEsales\EshopCommunity\Internal\Domain\Email
@@ -22,6 +25,12 @@ class EmailValidatorService implements EmailValidatorServiceInterface
      */
     public function isEmailValid($email): bool
     {
-        return filter_var($email, FILTER_VALIDATE_EMAIL) !== false;
+        try {
+            Username::fromString((string) $email);
+
+            return true;
+        } catch (InvalidArgumentException $e) {
+            return false;
+        }
     }
 }

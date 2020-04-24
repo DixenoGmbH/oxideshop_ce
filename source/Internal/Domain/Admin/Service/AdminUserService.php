@@ -11,9 +11,10 @@ namespace OxidEsales\EshopCommunity\Internal\Domain\Admin\Service;
 
 use OxidEsales\EshopCommunity\Internal\Domain\Admin\Dao\AdminDaoInterface;
 use OxidEsales\EshopCommunity\Internal\Domain\Admin\DataObject\Admin;
-use OxidEsales\EshopCommunity\Internal\Domain\Admin\DataObject\Password;
+use OxidEsales\EshopCommunity\Internal\Domain\Admin\DataObject\PasswordHash;
 use OxidEsales\EshopCommunity\Internal\Domain\Admin\DataObject\Rights;
 use OxidEsales\EshopCommunity\Internal\Domain\Admin\DataObject\UserName;
+use OxidEsales\EshopCommunity\Internal\Domain\Authentication\Service\PasswordHashServiceInterface;
 use OxidEsales\EshopCommunity\Internal\Transition\Adapter\ShopAdapterInterface;
 
 class AdminUserService
@@ -29,16 +30,26 @@ class AdminUserService
     private $shopAdapter;
 
     /**
+     * @var PasswordHashServiceInterface
+     */
+    private $passwordHashService;
+
+    /**
      * AdminUserService constructor.
      *
      * @param AdminDaoInterface $adminDao
+     * @param ShopAdapterInterface $shopAdapter
+     * @param PasswordHashServiceInterface $passwordHashService
+     *
      */
     public function __construct(
         AdminDaoInterface $adminDao,
-        ShopAdapterInterface $shopAdapter
+        ShopAdapterInterface $shopAdapter,
+        PasswordHashServiceInterface $passwordHashService
     ) {
         $this->adminDao = $adminDao;
         $this->shopAdapter = $shopAdapter;
+        $this->passwordHashService = $passwordHashService;
     }
 
     public function createAdmin(
@@ -49,8 +60,8 @@ class AdminUserService
     ) {
         $this->adminDao->create(Admin::fromUserInput(
             $this->shopAdapter->generateUniqueId(),
-            UserName::fromUserInput($userName),
-            Password::fromUserInput($password),
+            UserName::fromString($userName),
+            PasswordHash::fromHash($this->passwordHashService->hash($password)),
             Rights::fromUserInput($rights),
             $shopId ?? 1
         ));
@@ -59,7 +70,7 @@ class AdminUserService
     public function getAdminByEmail(string $email): Admin
     {
         return $this->adminDao->findByEmail(
-            UserName::fromUserInput($email)
+            UserName::fromString($email)
         );
     }
 

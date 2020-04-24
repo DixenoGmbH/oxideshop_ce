@@ -10,7 +10,7 @@ declare(strict_types=1);
 namespace OxidEsales\EshopCommunity\Internal\Domain\Admin\Dao;
 
 use OxidEsales\EshopCommunity\Internal\Domain\Admin\DataObject\Admin;
-use OxidEsales\EshopCommunity\Internal\Domain\Admin\DataObject\Password;
+use OxidEsales\EshopCommunity\Internal\Domain\Admin\DataObject\PasswordHash;
 use OxidEsales\EshopCommunity\Internal\Domain\Admin\DataObject\Rights;
 use OxidEsales\EshopCommunity\Internal\Domain\Admin\DataObject\UserName;
 use OxidEsales\EshopCommunity\Internal\Domain\Admin\Exception\UserNotFoundException;
@@ -50,7 +50,7 @@ class AdminDao implements AdminDaoInterface
             ->setParameters([
                 'OXID' => $admin->getId(),
                 'OXUSERNAME' => $admin->getUserName(),
-                'OXPASSWORD' => $admin->getPassword(),
+                'OXPASSWORD' => $admin->getPasswordHash(),
                 'OXRIGHTS' => $admin->getRights(),
                 'OXSHOPID' => $admin->getShopId()
             ]);
@@ -73,7 +73,7 @@ class AdminDao implements AdminDaoInterface
             ->setParameters([
                 'OXID' => $admin->getId(),
                 'OXUSERNAME' => $admin->getUserName(),
-                'OXPASSWORD' => $admin->getPassword(),
+                'OXPASSWORD' => $admin->getPasswordHash(),
                 'OXRIGHTS' => $admin->getRights(),
                 'OXSHOPID' => $admin->getShopId()
             ]);
@@ -99,8 +99,8 @@ class AdminDao implements AdminDaoInterface
 
         return Admin::fromDb(
             $result['OXID'],
-            UserName::fromDb($result['OXUSERNAME']),
-            Password::fromDb($result['OXPASSWORD']),
+            UserName::fromString($result['OXUSERNAME']),
+            PasswordHash::fromHash($result['OXPASSWORD']),
             Rights::fromDb($result['OXRIGHTS']),
             (int) $result['OXSHOPID']
         );
