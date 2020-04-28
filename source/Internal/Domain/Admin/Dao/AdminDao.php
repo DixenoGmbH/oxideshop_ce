@@ -97,11 +97,11 @@ class AdminDao implements AdminDaoInterface
             throw UserNotFoundException::byEmail($email);
         }
 
-        return Admin::fromDb(
+        return Admin::withValidation(
             $result['OXID'],
             UserName::fromString($result['OXUSERNAME']),
             PasswordHash::fromHash($result['OXPASSWORD']),
-            Rights::fromDb($result['OXRIGHTS']),
+            Rights::fromString($result['OXRIGHTS']),
             (int) $result['OXSHOPID']
         );
     }

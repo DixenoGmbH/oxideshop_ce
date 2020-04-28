@@ -25,11 +25,11 @@ class AdminTest extends TestCase
     {
         $testPassword = 'somePassword';
 
-        $admin = Admin::fromUserInput(
+        $admin = Admin::withValidation(
             '550e8400e29b11d4a716446655440000',
             UserName::fromString('test@oxideshop.de'),
             PasswordHash::fromPassword($testPassword, PASSWORD_ARGON2I),
-            Rights::fromUserInput('malladmin'),
+            Rights::fromString('malladmin'),
             1
         );
 
@@ -48,11 +48,11 @@ class AdminTest extends TestCase
     {
         $this->expectException(InvalidArgumentException::class);
 
-        Admin::fromUserInput(
+        Admin::withValidation(
             '550e8400e29b11d4a716446655440000asdasdasd',
             UserName::fromString('test@oxideshop.de'),
             PasswordHash::fromPassword('somePassword', PASSWORD_ARGON2I),
-            Rights::fromUserInput('malladmin'),
+            Rights::fromString('malladmin'),
             1
         );
     }
@@ -61,26 +61,26 @@ class AdminTest extends TestCase
     {
         $this->expectException(InvalidArgumentException::class);
 
-        Admin::fromUserInput(
+        Admin::withValidation(
             '550e8400e29b11d4a716446655440000',
             UserName::fromString('test@oxideshop.de'),
             PasswordHash::fromPassword('somePassword', PASSWORD_ARGON2I),
-            Rights::fromUserInput('malladmin'),
+            Rights::fromString('malladmin'),
             0
         );
     }
 
     public function checkChangeToAdmin()
     {
-        $admin = Admin::fromUserInput(
+        $admin = Admin::withValidation(
             '550e8400e29b11d4a716446655440000',
             UserName::fromString('test@oxideshop.de'),
             PasswordHash::fromPassword('test1234', PASSWORD_ARGON2I),
-            Rights::fromUserInput('1'),
+            Rights::fromString('1'),
             1
         );
 
-        $newAdmin = $admin->withNewRights(Rights::fromUserInput('malladmin'));
+        $newAdmin = $admin->withNewRights(Rights::fromString('malladmin'));
 
         $this->assertSame('malladmin', (string) $newAdmin->getRights());
         $this->assertNotSame($admin, $newAdmin);

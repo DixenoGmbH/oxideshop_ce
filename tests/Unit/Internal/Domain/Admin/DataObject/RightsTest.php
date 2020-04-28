@@ -29,7 +29,7 @@ class RightsTest extends TestCase
     public function testFromUserInput($testRights)
     {
         $testRights = 'malladmin';
-        $rights = Rights::fromUserInput($testRights);
+        $rights = Rights::fromString($testRights);
 
         $this->assertEquals($testRights, $rights);
     }
@@ -38,10 +38,10 @@ class RightsTest extends TestCase
     {
         $this->expectException(InvalidArgumentException::class);
 
-        Rights::fromUserInput('0');
+        Rights::fromString('0');
 
         $this->expectException(InvalidArgumentException::class);
 
-        Rights::fromUserInput('asdasd');
+        Rights::fromString('asdasd');
     }
 }

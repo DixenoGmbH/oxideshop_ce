@@ -23,17 +23,12 @@ class Rights
         $this->rights = $rights;
     }
 
-    public static function fromUserInput(string $rights): self
+    public static function fromString(string $rights): self
     {
         if ($rights == self::MALL_ADMIN || (is_numeric($rights) && (int) $rights > 0)) {
             return new self($rights);
         }
         throw new \InvalidArgumentException();
-    }
-
-    public static function fromDb(string $rights): self
-    {
-        return new self($rights);
     }
 
     public function __toString()

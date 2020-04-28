@@ -58,11 +58,11 @@ class AdminUserService
         string $rights = Rights::MALL_ADMIN,
         ?int $shopId = null
     ) {
-        $this->adminDao->create(Admin::fromUserInput(
+        $this->adminDao->create(Admin::withValidation(
             $this->shopAdapter->generateUniqueId(),
             UserName::fromString($userName),
             PasswordHash::fromHash($this->passwordHashService->hash($password)),
-            Rights::fromUserInput($rights),
+            Rights::fromString($rights),
             $shopId ?? 1
         ));
     }
@@ -85,7 +85,7 @@ class AdminUserService
         $newAdmin = $this->getAdminByEmail($userName);
 
         $this->adminDao->update(
-            $newAdmin->withNewRights(Rights::fromUserInput($rights))
+            $newAdmin->withNewRights(Rights::fromString($rights))
         );
     }
 }

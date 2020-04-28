@@ -50,7 +50,7 @@ class Admin
         $this->shopId   = $shopId;
     }
 
-    public static function fromUserInput(
+    public static function withValidation(
         string $userId,
         UserName $userName,
         PasswordHash $passwordHash,
@@ -66,22 +66,6 @@ class Admin
             throw new \InvalidArgumentException();
         }
 
-        return new self(
-            $userId,
-            $userName,
-            $passwordHash,
-            $rights,
-            $shopId
-        );
-    }
-
-    public static function fromDb(
-        string $userId,
-        UserName $userName,
-        PasswordHash $passwordHash,
-        Rights $rights,
-        int $shopId
-    ): self {
         return new self(
             $userId,
             $userName,

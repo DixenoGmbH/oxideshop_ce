@@ -32,7 +32,10 @@ class PasswordHash
         return new self($passwordHash);
     }
 
-    public static function fromPassword(string $password, int $algo, array $options = []): self
+    /**
+     * @param int|string $algo
+     */
+    public static function fromPassword(string $password, $algo, array $options = []): self
     {
         return new self(
             password_hash(
@@ -48,7 +51,10 @@ class PasswordHash
         return password_verify($password, $this->passwordHash);
     }
 
-    public function needsRehash(int $algo, array $options = []): bool
+    /**
+     * @param int|string $algo
+     */
+    public function needsRehash($algo, array $options = []): bool
     {
         return password_needs_rehash($this->passwordHash, $algo, $options);
     }
